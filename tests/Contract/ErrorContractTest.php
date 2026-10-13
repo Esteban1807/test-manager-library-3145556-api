@@ -56,6 +56,28 @@ class ErrorContractTest extends TestCase
         );
     }
 
+    public function test_an_id_that_is_not_a_uuid_answers_404_not_500(): void
+    {
+        $this->actingAsToken();
+
+        $this->assertErrorBody($this->getJson('/api/v1/books/abc', $this->auth())->assertStatus(404), 'NOT_FOUND');
+    }
+
+    public function test_unknown_category_answers_422_not_500(): void
+    {
+        $this->actingAsToken();
+
+        $response = $this->postJson('/api/v1/books', [
+            'title' => 'Libro',
+            'author' => 'Autor',
+            'isbn' => '9780307474728',
+            'category_id' => '99999999-9999-4999-8999-999999999999',
+            'total_copies' => 1,
+        ], $this->auth());
+
+        $this->assertErrorBody($response->assertStatus(422), 'VALIDATION_ERROR');
+    }
+
     public function test_health_is_public_and_answers_ok(): void
     {
         $this->getJson('/api/v1/health')->assertOk()->assertExactJson(['status' => 'ok']);

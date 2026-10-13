@@ -10,6 +10,11 @@ use App\Adapters\Http\Controllers\UserController;
 use App\Adapters\Http\HealthController;
 use Illuminate\Support\Facades\Route;
 
+// Ids are UUIDs (api-contract §1): anything else is simply a route that does not exist (404)
+Route::pattern('id', '[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}');
+Route::pattern('loanId', '[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}');
+Route::pattern('itemId', '[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}');
+
 // Public routes: no token (api-contract §1, §3.1, D-API-03)
 Route::get('/health', HealthController::class);
 Route::post('/auth/login', [AuthController::class, 'login']);

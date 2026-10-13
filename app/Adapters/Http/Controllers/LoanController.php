@@ -21,9 +21,9 @@ final class LoanController
     public function store(Request $request, LendBooksService $lend, Clock $clock): JsonResponse
     {
         $data = $request->validate([
-            'member_id' => ['required', 'string'],
+            'member_id' => ['required', 'uuid'],
             'items' => ['required', 'array', 'min:1', 'max:3'],
-            'items.*.book_id' => ['required', 'string'],
+            'items.*.book_id' => ['required', 'uuid'],
         ]);
 
         $bookIds = array_column($data['items'], 'book_id');
@@ -37,6 +37,7 @@ final class LoanController
     {
         $request->validate([
             'status' => ['nullable', 'in:open,overdue,closed'],
+            'member_id' => ['nullable', 'uuid'],
             'from' => ['nullable', 'date_format:Y-m-d'],
             'to' => ['nullable', 'date_format:Y-m-d'],
         ]);

@@ -17,12 +17,15 @@ use App\Application\UseCases\UploadCoverService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 // /books (api-contract §3.4)
 final class BookController
 {
     public function index(Request $request, SearchBooksService $search, CategoryReader $categories): JsonResponse
     {
+        $request->validate(['category_id' => ['nullable', 'uuid']]);
+
         $page = (int) $request->query('page', 1);
         $size = (int) $request->query('size', 20);
 
@@ -33,9 +36,12 @@ final class BookController
             $size,
         );
 
+        // One query for the five category names, instead of one per book in the page
+        $names = array_column($categories->all(), 'name', 'id');
+
         return response()->json([
             'items' => array_map(
-                fn ($book) => Presenter::book($book, $categories->nameOf($book->categoryId()) ?? ''),
+                fn ($book) => Presenter::book($book, $names[$book->categoryId()] ?? ''),
                 $result->items,
             ),
             'page' => $result->page,
@@ -57,9 +63,11 @@ final class BookController
             'title' => ['required', 'string', 'max:250'],
             'author' => ['required', 'string', 'max:200'],
             'isbn' => ['required', 'string'],
-            'category_id' => ['required', 'string'],
+            'category_id' => ['required', 'uuid'],
             'total_copies' => ['required', 'integer', 'min:1'],
         ]);
+
+        $this->assertCategoryExists($categories, $data['category_id']);
 
         $book = $create->execute(
             $ids->next(),
@@ -78,9 +86,11 @@ final class BookController
         $data = $request->validate([
             'title' => ['required', 'string', 'max:250'],
             'author' => ['required', 'string', 'max:200'],
-            'category_id' => ['required', 'string'],
+            'category_id' => ['required', 'uuid'],
             'total_copies' => ['required', 'integer', 'min:1'],
         ]);
+
+        $this->assertCategoryExists($categories, $data['category_id']);
 
         $book = $update->execute($id, $data['title'], $data['author'], $data['category_id'], (int) $data['total_copies']);
 
@@ -125,6 +135,14 @@ final class BookController
         $book = $remove->execute($id);
 
         return response()->json(Presenter::book($book, $categories->nameOf($book->categoryId()) ?? ''));
+    }
+
+    // A category that is not one of the five fixed ones is an input error (422), not a server error
+    private function assertCategoryExists(CategoryReader $categories, string $categoryId): void
+    {
+        if ($categories->nameOf($categoryId) === null) {
+            throw ValidationException::withMessages(['category_id' => 'La categoría no existe.']);
+        }
     }
 
     private function findActive(BookRepository $books, string $id): \App\Domain\Book\Book
