@@ -2,13 +2,13 @@
 
 namespace Tests\Integration;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\ResetsLibrarySchema;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class SchemaTest extends TestCase
 {
-    use RefreshDatabase;
+    use ResetsLibrarySchema;
 
     public function test_exactly_six_tables_exist_in_library_schema(): void
     {
