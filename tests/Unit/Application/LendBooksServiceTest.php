@@ -35,12 +35,14 @@ class LendBooksServiceTest extends TestCase
     private InMemoryBookRepository $books;
     private InMemoryLoanRepository $loans;
     private FixedClock $clock;
+    private SequentialIdGenerator $ids;
 
     protected function setUp(): void
     {
         $this->members = new InMemoryMemberRepository();
         $this->books = new InMemoryBookRepository();
         $this->loans = new InMemoryLoanRepository();
+        $this->ids = new SequentialIdGenerator(); // shared, so every loan gets a unique id
         $this->clock = new FixedClock(new DateTimeImmutable('2026-10-13T12:00:00Z'));
 
         $this->members->save(Member::create(self::MEMBER, 'Luis Pérez', DocumentNumber::fromString('123')));
@@ -62,7 +64,7 @@ class LendBooksServiceTest extends TestCase
             $this->books,
             $this->loans,
             new FixedCategoryReader(),
-            new SequentialIdGenerator(),
+            $this->ids,
             $this->clock,
         );
     }

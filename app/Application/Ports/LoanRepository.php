@@ -10,6 +10,12 @@ use DateTimeImmutable;
 // save() writes the loan and the touched books in ONE transaction (architecture §4, ADR-002).
 interface LoanRepository
 {
+    public function findById(string $id): ?Loan;
+
+    // Loans that still have at least one line not returned (feeds the overdue list, HU-09)
+    /** @return Loan[] */
+    public function findWithOpenItems(): array;
+
     /** @param Book[] $books books whose copies changed in this operation */
     public function save(Loan $loan, array $books): void;
 

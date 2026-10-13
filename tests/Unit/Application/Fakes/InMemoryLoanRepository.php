@@ -9,12 +9,25 @@ use DateTimeImmutable;
 
 final class InMemoryLoanRepository implements LoanRepository
 {
-    /** @var Loan[] */
+    /** @var array<string, Loan> */
     public array $loans = [];
+
+    public function findById(string $id): ?Loan
+    {
+        return $this->loans[$id] ?? null;
+    }
+
+    public function findWithOpenItems(): array
+    {
+        return array_values(array_filter(
+            $this->loans,
+            fn (Loan $loan) => array_filter($loan->items(), fn ($item) => ! $item->isReturned()) !== [],
+        ));
+    }
 
     public function save(Loan $loan, array $books): void
     {
-        $this->loans[] = $loan;
+        $this->loans[$loan->id()] = $loan;
     }
 
     public function countOpenItemsForMember(string $memberId): int
