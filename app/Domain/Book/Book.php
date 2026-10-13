@@ -109,6 +109,21 @@ final class Book
         return $this->id;
     }
 
+    public function title(): string
+    {
+        return $this->title;
+    }
+
+    public function isbn(): string
+    {
+        return $this->isbn->value;
+    }
+
+    public function categoryId(): string
+    {
+        return $this->categoryId;
+    }
+
     public function available(): int
     {
         return $this->availableCopies;
