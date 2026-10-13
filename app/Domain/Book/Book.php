@@ -93,6 +93,40 @@ final class Book
         $this->version++;
     }
 
+    // CA-03.1 edit: replaces title, author and category (HU-03, PUT /books/{id})
+    public function update(string $title, string $author, string $categoryId): void
+    {
+        $this->assertActive();
+
+        $this->title = self::normalizeTitle($title);
+        $this->author = trim($author);
+        $this->categoryId = $categoryId;
+        $this->version++;
+    }
+
+    // CA-03.4: the database keeps an opaque key, never a path or bytes
+    public function attachCover(string $coverKey): void
+    {
+        $this->assertActive();
+
+        $this->coverKey = $coverKey;
+        $this->version++;
+    }
+
+    // Order matters: clear the key first, then the caller deletes the binary (data-model §7)
+    public function detachCover(): void
+    {
+        $this->assertActive();
+
+        $this->coverKey = null;
+        $this->version++;
+    }
+
+    public function coverKey(): ?string
+    {
+        return $this->coverKey;
+    }
+
     // CA-03.5: logical deletion. Open-loan check belongs to the use case (409 BOOK_HAS_OPEN_LOANS)
     public function softDelete(DateTimeImmutable $at): void
     {
