@@ -9,4 +9,7 @@ return [
     'admin_password' => env('ADMIN_PASSWORD'),
 
     'cors_allowed_origins' => env('CORS_ALLOWED_ORIGINS', 'http://localhost:5173'),
+
+    // Demo only: lets the X-Demo-Now header set the clock per request. Never enable in production.
+    'demo_clock' => (bool) env('LIBRARY_DEMO_CLOCK', false),
 ];
