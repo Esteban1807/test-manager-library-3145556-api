@@ -17,6 +17,11 @@ final class FakeCoverStorage implements CoverStorage
         return $key;
     }
 
+    public function read(string $key): string
+    {
+        return $this->stored[$key];
+    }
+
     public function delete(string $key): void
     {
         unset($this->stored[$key]);

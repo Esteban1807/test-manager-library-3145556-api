@@ -8,5 +8,7 @@ interface CoverStorage
     // Returns the opaque key stored in books.cover_key
     public function store(string $bookId, string $bytes, string $mimeType): string;
 
+    public function read(string $key): string;
+
     public function delete(string $key): void;
 }

@@ -6,4 +6,8 @@ namespace App\Application\Ports;
 interface CategoryReader
 {
     public function nameOf(string $categoryId): ?string;
+
+    // GET /categories: the five fixed categories, ordered by name (api-contract §3.3)
+    /** @return array<int, array{id: string, name: string}> */
+    public function all(): array;
 }

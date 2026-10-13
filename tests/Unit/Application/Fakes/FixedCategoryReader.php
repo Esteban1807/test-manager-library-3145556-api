@@ -12,6 +12,14 @@ final class FixedCategoryReader implements CategoryReader
         '22222222-2222-4222-8222-222222222222' => 'Ciencia',
     ];
 
+    public function all(): array
+    {
+        return [
+            ['id' => '11111111-1111-4111-8111-111111111111', 'name' => 'Novela'],
+            ['id' => '22222222-2222-4222-8222-222222222222', 'name' => 'Ciencia'],
+        ];
+    }
+
     public function nameOf(string $categoryId): ?string
     {
         return $this->names[$categoryId] ?? null;
