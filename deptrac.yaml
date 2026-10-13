@@ -1,0 +1,39 @@
+# Layer rules for the hexagonal architecture (constitution Articles I-III, docs/spec-laravel/architecture.md §2).
+# Run with: vendor/bin/deptrac analyse
+deptrac:
+  paths:
+    - ./app
+  layers:
+    - name: Domain
+      collectors:
+        - type: directory
+          value: app/Domain/.*
+    - name: Application
+      collectors:
+        - type: directory
+          value: app/Application/.*
+    - name: Adapters
+      collectors:
+        - type: directory
+          value: app/Adapters/.*
+    - name: Bootstrap
+      collectors:
+        - type: directory
+          value: app/Bootstrap/.*
+    - name: Framework
+      collectors:
+        - type: classNameRegex
+          value: '#^Illuminate\\.*#'
+  ruleset:
+    Domain: []
+    Application:
+      - Domain
+    Adapters:
+      - Application
+      - Domain
+      - Framework
+    Bootstrap:
+      - Application
+      - Adapters
+      - Domain
+      - Framework
