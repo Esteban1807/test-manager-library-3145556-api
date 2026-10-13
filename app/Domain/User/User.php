@@ -33,6 +33,12 @@ final class User
         return new self($id, self::normalizeUsername($username), $passwordHash, Role::Librarian);
     }
 
+    // Rebuilds the aggregate from storage (Persistence adapter only)
+    public static function reconstitute(string $id, string $username, string $passwordHash, Role $role): self
+    {
+        return new self($id, $username, $passwordHash, $role);
+    }
+
     public function id(): string
     {
         return $this->id;

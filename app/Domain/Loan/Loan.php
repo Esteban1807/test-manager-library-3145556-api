@@ -95,6 +95,21 @@ final class Loan
         return $this->items;
     }
 
+    // Rebuilds the aggregate and its lines from storage (Persistence adapter only)
+    /** @param LoanItem[] $items */
+    public static function reconstitute(
+        string $id,
+        string $memberId,
+        string $loanedByUserId,
+        DateTimeImmutable $loanedAt,
+        array $items,
+    ): self {
+        $loan = new self($id, $memberId, $loanedByUserId, $loanedAt);
+        $loan->items = $items;
+
+        return $loan;
+    }
+
     public function id(): string
     {
         return $this->id;
@@ -103,6 +118,11 @@ final class Loan
     public function memberId(): string
     {
         return $this->memberId;
+    }
+
+    public function loanedByUserId(): string
+    {
+        return $this->loanedByUserId;
     }
 
     public function loanedAt(): DateTimeImmutable

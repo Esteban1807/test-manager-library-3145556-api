@@ -138,6 +138,33 @@ final class Book
         $this->version++;
     }
 
+    // Rebuilds the aggregate from storage without re-running creation rules (Persistence adapter only)
+    public static function reconstitute(
+        string $id,
+        string $title,
+        string $author,
+        string $isbn,
+        string $categoryId,
+        int $totalCopies,
+        int $availableCopies,
+        int $version,
+        ?string $coverKey,
+        ?DateTimeImmutable $deletedAt,
+    ): self {
+        return new self(
+            $id,
+            $title,
+            $author,
+            Isbn::fromString($isbn),
+            $categoryId,
+            Quantity::of($totalCopies),
+            $availableCopies,
+            $version,
+            $coverKey,
+            $deletedAt,
+        );
+    }
+
     public function id(): string
     {
         return $this->id;
@@ -146,6 +173,16 @@ final class Book
     public function title(): string
     {
         return $this->title;
+    }
+
+    public function author(): string
+    {
+        return $this->author;
+    }
+
+    public function deletedAt(): ?DateTimeImmutable
+    {
+        return $this->deletedAt;
     }
 
     public function isbn(): string

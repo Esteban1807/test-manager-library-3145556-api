@@ -26,6 +26,12 @@ final class Member
         return new self($id, $name, $documentNumber);
     }
 
+    // Rebuilds the aggregate from storage (Persistence adapter only)
+    public static function reconstitute(string $id, string $fullName, string $documentNumber): self
+    {
+        return new self($id, $fullName, DocumentNumber::fromString($documentNumber));
+    }
+
     public function id(): string
     {
         return $this->id;
